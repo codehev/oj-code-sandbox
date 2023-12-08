@@ -3,7 +3,6 @@ package com.wei.ojcodesandbox.utils;
 import cn.hutool.core.util.StrUtil;
 import com.wei.ojcodesandbox.model.ExecuteMessage;
 import org.springframework.util.StopWatch;
-import org.springframework.util.StringUtils;
 
 import java.io.*;
 
@@ -12,9 +11,9 @@ public class ProcessUtils {
      * main函数接收参数String[] args
      * 与leetcode方式类似
      * class Solution {
-     * public int[] twoSum(int[] nums, int target) {
-     * <p>
-     * }
+     *      public int[] twoSum(int[] nums, int target) {
+     *      <p>
+     *      }
      * }
      *
      * @param process 进程
@@ -26,12 +25,14 @@ public class ProcessUtils {
         try {
             //用来计算运行时间，sping的工具类
             StopWatch stopWatch = new StopWatch();
+            //开始计时
             stopWatch.start();
-            int exitValue = process.waitFor();//等待程序执行，获取错误码
+            //等待程序执行，获取错误码
+            int exitValue = process.waitFor();
             executeMessage.setExitValue(exitValue);
             if (exitValue == 0) {
                 //正常退出
-                System.out.println(opName + "成功\n");
+                System.out.println(opName + "成功");
                 //分批获取进程的正常输出；BufferedReader成块读取，InputStreamReader读取complieProcess进程的输入流
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 StringBuilder compileOutpuStringBuilder = new StringBuilder();
@@ -39,13 +40,14 @@ public class ProcessUtils {
                 String compileOutputLine;
                 while ((compileOutputLine = bufferedReader.readLine()) != null) {
                     //System.out.println(compileOutputLine);
-                    compileOutpuStringBuilder.append(compileOutputLine);//拼接字符串
+                    //拼接字符串
+                    compileOutpuStringBuilder.append(compileOutputLine);
                 }
                 //System.out.println(compileOutpuStringBuilder);
                 executeMessage.setMessage(compileOutpuStringBuilder.toString());
             } else {
                 //异常退出
-                System.out.println(opName + "失败，错误码：" + exitValue + "\n");
+                System.out.println(opName + "失败，错误码：" + exitValue);
                 /**
                  * 输入流getInputStream和错误流getErrorStream是程序编写者可以控制的，可能把程序的报错写到输入流中
                  * 所以也要读取输入流

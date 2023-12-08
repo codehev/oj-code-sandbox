@@ -1,4 +1,7 @@
 # 应用服务 WEB 访问端口
 server:
   port: 8081
+docker:
+  host: tcp://192.168.200.139:2375
+  api-version: 1.43
 
