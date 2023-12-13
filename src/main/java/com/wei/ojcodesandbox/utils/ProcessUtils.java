@@ -2,9 +2,11 @@ package com.wei.ojcodesandbox.utils;
 
 import cn.hutool.core.util.StrUtil;
 import com.wei.ojcodesandbox.model.ExecuteMessage;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.StopWatch;
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class ProcessUtils {
     /**
@@ -12,7 +14,7 @@ public class ProcessUtils {
      * 与leetcode方式类似
      * class Solution {
      *      public int[] twoSum(int[] nums, int target) {
-     *      <p>
+     *          <p>
      *      }
      * }
      *
@@ -35,16 +37,19 @@ public class ProcessUtils {
                 System.out.println(opName + "成功");
                 //分批获取进程的正常输出；BufferedReader成块读取，InputStreamReader读取complieProcess进程的输入流
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                StringBuilder compileOutpuStringBuilder = new StringBuilder();
+                //StringBuilder compileOutpuStringBuilder = new StringBuilder();
+                ArrayList<String> outputStrList = new ArrayList<>();
                 //按行读取控制台编译信息
                 String compileOutputLine;
                 while ((compileOutputLine = bufferedReader.readLine()) != null) {
                     //System.out.println(compileOutputLine);
                     //拼接字符串
-                    compileOutpuStringBuilder.append(compileOutputLine);
+                    //compileOutpuStringBuilder.append(compileOutputLine);
+                    outputStrList.add(compileOutputLine);
                 }
                 //System.out.println(compileOutpuStringBuilder);
-                executeMessage.setMessage(compileOutpuStringBuilder.toString());
+                //executeMessage.setMessage(compileOutpuStringBuilder.toString());
+                executeMessage.setMessage(StringUtils.join(outputStrList, "\n"));
             } else {
                 //异常退出
                 System.out.println(opName + "失败，错误码：" + exitValue);
@@ -54,27 +59,23 @@ public class ProcessUtils {
                  */
                 //分批获取进程的正常输出
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                StringBuilder compileOutpuStringBuilder = new StringBuilder();
+                ArrayList<String> outputStrList = new ArrayList<>();
                 //按行读取控制台编译信息
                 String compileOutputLine;
                 while ((compileOutputLine = bufferedReader.readLine()) != null) {
-                    //System.out.println(compileOutputLine);
-                    compileOutpuStringBuilder.append(compileOutputLine);//拼接字符串
+                    outputStrList.add(compileOutputLine);
                 }
-                //System.out.println(compileOutpuStringBuilder);
-                executeMessage.setMessage(compileOutpuStringBuilder.toString());
+                executeMessage.setMessage(StringUtils.join(outputStrList, "\n"));
 
                 //分批获取进程的错误输出
                 BufferedReader errorBufferedReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-                StringBuilder errorCompileOutpuStringBuilder = new StringBuilder();
+                ArrayList<String> errorOutputStrList = new ArrayList<>();
                 //按行读取控制台编译信息
                 String errorCompileOutputLine;
                 while ((errorCompileOutputLine = errorBufferedReader.readLine()) != null) {
-                    //System.out.println(errorCompileOutputLine);
-                    errorCompileOutpuStringBuilder.append(errorCompileOutputLine);//拼接字符串
+                    errorOutputStrList.add(errorCompileOutputLine);
                 }
-                //System.out.println(errorCompileOutpuStringBuilder);
-                executeMessage.setErrorMessage(errorCompileOutpuStringBuilder.toString());
+                executeMessage.setMessage(StringUtils.join(errorOutputStrList, "\n"));
             }
             stopWatch.stop();
             executeMessage.setTime(stopWatch.getTotalTimeMillis());
@@ -94,6 +95,7 @@ public class ProcessUtils {
      * @param args    参数
      * @return
      */
+    @Deprecated
     public static ExecuteMessage runInteractProcessAndGetMessage(Process process, String args) {
         ExecuteMessage executeMessage = new ExecuteMessage();
         try {
