@@ -53,7 +53,7 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
          * 2.编译代码，得到 class 文件
          */
         ExecuteMessage compileFileExecuteMessage = compileFile(userCodeFile);
-        System.out.println("compileFileExecuteMessage：" + compileFileExecuteMessage);
+//        System.out.println("compileFileExecuteMessage：" + compileFileExecuteMessage);
 
         /**
          * 3.执行代码，得到输出结果
@@ -72,7 +72,7 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
          */
         boolean b = deleteFile(userCodeFile);
         if (!b) {
-            log.error("删除文件失败，文件路径为：{}",userCodeFile.getParentFile().getAbsolutePath());
+            log.error("删除文件失败，文件路径为：{}", userCodeFile.getParentFile().getAbsolutePath());
         }
 
         return executeCodeResponse;
@@ -126,7 +126,6 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
      * 3.执行代码，得到输出结果
      * <p>
      * 注意：有多个输入用例，会运行多次
-     *
      */
     public List<ExecuteMessage> runFile(File userCodeFile, List<String> inputList) {
         String userCodeParentPath = userCodeFile.getParentFile().getAbsolutePath();
@@ -158,7 +157,7 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
                 ExecuteMessage executeMessage = ProcessUtils.runProcessAndGetMessage(runProcess, "运行");
                 //ExecuteMessage executeMessage = ProcessUtils.runInteractProcessAndGetMessage(runProcess, inputArgs);
                 executeMessageList.add(executeMessage);
-                System.out.println(executeMessage + "\n");
+//                System.out.println(executeMessage + "\n");
             } catch (Exception e) {
                 throw new RuntimeException("程序执行异常", e);
 //                return getErrorResponse(e);
@@ -170,12 +169,13 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
     /**
      * 4.收集整理输出结果
      */
-    public ExecuteCodeResponse getOutputResponse(List<ExecuteMessage> executeMessageList){
+    public ExecuteCodeResponse getOutputResponse(List<ExecuteMessage> executeMessageList) {
 
         ExecuteCodeResponse executeCodeResponse = new ExecuteCodeResponse();
         List<String> outputList = new ArrayList<>();
         //取用时最大值，便与判断是否超时
         long maxTime = 0;
+        long maxMemory = 0;
         for (ExecuteMessage executeMessage : executeMessageList) {
             String errorMessage = executeMessage.getErrorMessage();
             //错误信息非空
@@ -189,28 +189,35 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
             if (time != null) {
                 maxTime = Math.max(maxTime, time);
             }
+            Long memory = executeMessage.getMemory();
+            if (memory != null) {
+                maxMemory = Math.max(maxMemory, memory);
+            }
             //执行过程中不存在错误
             outputList.add(executeMessage.getMessage());
         }
         if (outputList.size() == executeMessageList.size()) {
             // 2代表成功
             executeCodeResponse.setStatus(2);
+            executeCodeResponse.setOutputList(outputList);
+
+            JudgeInfo judgeInfo = new JudgeInfo();
+            //judgeInfo.setMessage();//非程序执行结果输出的信息,在判题服务实例设置，此处不设置
+            judgeInfo.setMemory(maxMemory);//比较难实现获取内存,单位kb
+            judgeInfo.setTime(maxTime);//单位毫秒ms
+
+            executeCodeResponse.setJudgeInfo(judgeInfo);
+        } else {
+            executeCodeResponse.setStatus(3);
         }
-        executeCodeResponse.setOutputList(outputList);
 
-        JudgeInfo judgeInfo = new JudgeInfo();
-        //judgeInfo.setMessage();//非程序执行结果输出的信息,在判题服务例设置，此处不设置
-        //judgeInfo.setMemory();//比较难实现获取内存
-        judgeInfo.setTime(maxTime);
-
-        executeCodeResponse.setJudgeInfo(judgeInfo);
         return executeCodeResponse;
     }
 
     /**
      * 5.文件清理，释放空间
      */
-    public boolean deleteFile(File userCodeFile){
+    public boolean deleteFile(File userCodeFile) {
         if (userCodeFile.getParentFile() != null) {
             String userCodeParentPath = userCodeFile.getParentFile().getAbsolutePath();
             boolean del = FileUtil.del(userCodeParentPath);
@@ -233,7 +240,7 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
         executeCodeResponse.setOutputList(new ArrayList<>());
         executeCodeResponse.setMessage(e.getMessage());
         //表示代码沙箱错误
-        executeCodeResponse.setStatus(2);
+        executeCodeResponse.setStatus(3);
         executeCodeResponse.setJudgeInfo(new JudgeInfo());
         return executeCodeResponse;
     }

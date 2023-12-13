@@ -21,7 +21,7 @@ public class MainController {
      */
     private static final String AUTH_REQUEST_HEADER = "auth";
 
-    private static final String AUTH_REQUEST_SECRET = "secretKey";
+    private static final String AUTH_REQUEST_SECRET = "secretkey";
 
     @Resource
     JavaDockerCodeSandbox javaDockerCodeSandbox;

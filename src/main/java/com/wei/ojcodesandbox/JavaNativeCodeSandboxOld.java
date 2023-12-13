@@ -43,6 +43,7 @@ public class JavaNativeCodeSandboxOld implements CodeSandbox {
         WORD_TREE = new WordTree();
         WORD_TREE.addWords(blackList);
     }
+
     //SecurityManager类的.class文件路径
     private static final String SECURITY_MANAGER_PATH = "C:\\code\\oj-code-sandbox\\src\\main\\resources\\security";
     //SecurityManager类的.class文件名字
@@ -173,6 +174,7 @@ public class JavaNativeCodeSandboxOld implements CodeSandbox {
         List<String> outputList = new ArrayList<>();
         //取用时最大值，便与判断是否超时
         long maxTime = 0;
+        long maxMemory = 0;
         for (ExecuteMessage executeMessage : executeMessageList) {
             String errorMessage = executeMessage.getErrorMessage();
             //错误信息非空
@@ -186,6 +188,10 @@ public class JavaNativeCodeSandboxOld implements CodeSandbox {
             if (time != null) {
                 maxTime = Math.max(maxTime, time);
             }
+            Long memory = executeMessage.getMemory();
+            if (memory != null) {
+                maxMemory = Math.max(maxMemory, memory);
+            }
             //执行过程中不存在错误
             outputList.add(executeMessage.getMessage());
         }
@@ -197,7 +203,7 @@ public class JavaNativeCodeSandboxOld implements CodeSandbox {
 
         JudgeInfo judgeInfo = new JudgeInfo();
         //judgeInfo.setMessage();//非程序执行结果输出的信息,在判题服务例设置，此处不设置
-        //judgeInfo.setMemory();//比较难实现获取内存
+        judgeInfo.setMemory(maxMemory);//比较难实现获取内存
         judgeInfo.setTime(maxTime);
 
         executeCodeResponse.setJudgeInfo(judgeInfo);
@@ -226,7 +232,7 @@ public class JavaNativeCodeSandboxOld implements CodeSandbox {
         executeCodeResponse.setOutputList(new ArrayList<>());
         executeCodeResponse.setMessage(e.getMessage());
         //表示代码沙箱错误
-        executeCodeResponse.setStatus(2);
+        executeCodeResponse.setStatus(3);
         executeCodeResponse.setJudgeInfo(new JudgeInfo());
         return executeCodeResponse;
     }

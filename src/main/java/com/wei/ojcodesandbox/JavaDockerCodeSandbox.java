@@ -30,11 +30,12 @@ import java.util.concurrent.TimeUnit;
 public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
 
     /**
-     * 设置最大运行时间，超过则结束进程
+     * 设置最大运行时间毫秒，超过则结束进程
      */
     private static final long TIME_OUT = 5000L;
 
     private static final Boolean FIRST_INIT = false;
+
 
 
     public static void main(String[] args) {
@@ -86,8 +87,8 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
                 //异步的方式执行,awaitCompletion,阻塞，直到下载完成（没下载完，会一直卡在那），不然不会等下载完成就往下执行
                 pullImageCmd.exec(pullImageResultCallback).awaitCompletion();
             } catch (Exception e) {
-                System.out.println("拉取镜像异常");
-                throw new RuntimeException("拉取镜像异常");
+//                System.out.println("拉取镜像异常");
+                throw new RuntimeException("拉取镜像异常",e);
 //                return getErrorResponse(e);
             }
             System.out.println("下载完成");
@@ -107,7 +108,7 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
         //内存交换空间（写入数据时，如果没有足够的内存，会将内存中的数据写入到交换空间中，交换空间的大小与内存大小相同，当内存满时，会将交换空间中的数据写入到硬盘中）
         hostConfig.withMemorySwap(0L);
         //cpu核心数
-        hostConfig.withCpuCount(1L);
+        hostConfig.withCpuCount(2L);
         //Linux seccomp安全管理配置
         //hostConfig.withSecurityOpts(Arrays.asList("seccomp=安全管理配置字符串"));
 
@@ -126,7 +127,7 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
                 //在启用终端模拟时，容器中的进程将认为它在一个真正的终端上运行，并且可以进行按键输入和输出等操作。这对于需要与终端进行交互的应用程序非常重要。
                 .withTty(true)
                 .exec();
-        System.out.println("createContainerResponse：" + createContainerResponse);
+//        System.out.println("createContainerResponse：" + createContainerResponse);
         String containerId = createContainerResponse.getId();
 
 
@@ -151,11 +152,9 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
                     .withAttachStdout(true)
                     .withAttachStderr(true)
                     .exec();
-            System.out.println("创建执行命令：" + execCreateCmdResponse);
 
-
+            //缩小e6倍为1mb
             final long[] maxMemory = {0L};
-            //监控内存信息
             /**
              * 监控内存信息
              */
@@ -189,7 +188,7 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
                         }
                     });
             //启动监控
-            statsCmd.exec(statisticsResultCallback);
+//            statsCmd.exec(statisticsResultCallback);
 
             ExecuteMessage executeMessage = new ExecuteMessage();
             final String[] message = {null};
@@ -198,7 +197,7 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
             //是否超时
             final boolean[] timout = {true};
 
-            //用来计算运行时间，sping的工具类
+            //用来计算运行时间，spring的工具类
             StopWatch stopWatch = new StopWatch();
 
             try {
@@ -221,11 +220,11 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
                         super.onNext(item);
                     }
 
-                    //执行完成的回调
+                    //TIME_OUT时间内执行完成的回调
                     @Override
                     public void onComplete() {
                         //如果执行完成，则没有超时
-                        timout[0] = true;
+                        timout[0] = false;
                         super.onComplete();
                     }
                 }).awaitCompletion(TIME_OUT, TimeUnit.MICROSECONDS);
@@ -237,16 +236,31 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
                 statsCmd.close();
 
             } catch (InterruptedException e) {
-                System.out.println("程序执行异常");
-                throw new RuntimeException(e);
+                throw new RuntimeException("程序执行异常",e);
             }
-
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            System.out.println(maxMemory[0]);
+            System.out.println(message[0]);
+            System.out.println(errorMessage[0]);
+            System.out.println(timout[0]);
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             executeMessage.setTime(time);
             executeMessage.setMemory(maxMemory[0]);
             executeMessage.setMessage(message[0]);
             executeMessage.setErrorMessage(errorMessage[0]);
+            System.out.println("inputArgs："+inputArgs);
+            System.out.println("executeMessage消息：" + executeMessage.toString());
             executeMessageList.add(executeMessage);
         }
+        /**
+         * 关闭容器
+         */
+        dockerClient.stopContainerCmd(containerId).exec();
+        /**
+         * 移除容器
+         */
+        dockerClient.removeContainerCmd(containerId).exec();
+
         return executeMessageList;
     }
 }

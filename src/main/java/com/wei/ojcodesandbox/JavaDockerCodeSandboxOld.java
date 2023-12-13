@@ -352,8 +352,8 @@ public class JavaDockerCodeSandboxOld implements CodeSandbox {
             outputList.add(executeMessage.getMessage());
         }
         if (outputList.size() == executeMessageList.size()) {
-            // 1代表成功
-            executeCodeResponse.setStatus(1);
+            // 2代表成功
+            executeCodeResponse.setStatus(2);
         }
         executeCodeResponse.setOutputList(outputList);
 
@@ -388,7 +388,7 @@ public class JavaDockerCodeSandboxOld implements CodeSandbox {
         executeCodeResponse.setOutputList(new ArrayList<>());
         executeCodeResponse.setMessage(e.getMessage());
         //表示代码沙箱错误
-        executeCodeResponse.setStatus(2);
+        executeCodeResponse.setStatus(3);
         executeCodeResponse.setJudgeInfo(new JudgeInfo());
         return executeCodeResponse;
     }
