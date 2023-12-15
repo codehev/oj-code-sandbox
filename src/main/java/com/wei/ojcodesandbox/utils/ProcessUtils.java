@@ -78,6 +78,7 @@ public class ProcessUtils {
                 executeMessage.setMessage(StringUtils.join(errorOutputStrList, "\n"));
             }
             stopWatch.stop();
+            //获取所有任务的总时间（以毫秒为单位）
             executeMessage.setTime(stopWatch.getTotalTimeMillis());
         } catch (Exception e) {
             e.printStackTrace();

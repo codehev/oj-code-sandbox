@@ -231,6 +231,7 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
                 //设置超时时间，单位毫秒，这种方式无论超时与否，都会往下执行，无法判断是否超时。
                 //停止计时
                 stopWatch.stop();
+                //获取所有任务的总时间（以毫秒为单位）
                 time = stopWatch.getTotalTimeMillis();
                 //关闭监控
                 statsCmd.close();
@@ -238,18 +239,12 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
             } catch (InterruptedException e) {
                 throw new RuntimeException("程序执行异常",e);
             }
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-            System.out.println(maxMemory[0]);
-            System.out.println(message[0]);
-            System.out.println(errorMessage[0]);
-            System.out.println(timout[0]);
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+
             executeMessage.setTime(time);
             executeMessage.setMemory(maxMemory[0]);
             executeMessage.setMessage(message[0]);
             executeMessage.setErrorMessage(errorMessage[0]);
-            System.out.println("inputArgs："+inputArgs);
-            System.out.println("executeMessage消息：" + executeMessage.toString());
+
             executeMessageList.add(executeMessage);
         }
         /**
