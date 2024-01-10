@@ -4,7 +4,7 @@ import com.wei.ojcodesandbox.JavaDockerCodeSandbox;
 import com.wei.ojcodesandbox.JavaNativeCodeSandbox;
 import com.wei.ojcodesandbox.model.ExecuteCodeRequest;
 import com.wei.ojcodesandbox.model.ExecuteCodeResponse;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,23 +17,21 @@ import javax.servlet.http.HttpServletResponse;
 public class MainController {
 
     /**
+     * todo 远程代码沙箱鉴权
      * 定义鉴权请求头和密钥
      */
-    private static final String AUTH_REQUEST_HEADER = "auth";
-
-    private static final String AUTH_REQUEST_SECRET = "secretkey";
+    @Value("${auth.request.header:auth}")
+    private String AUTH_REQUEST_HEADER;
+    @Value("${auth.request.secret:secretkey}")
+    private String AUTH_REQUEST_SECRET;
+/*    private static final String AUTH_REQUEST_HEADER = "auth";
+    private static final String AUTH_REQUEST_SECRET = "secretkey";*/
 
     @Resource
     JavaDockerCodeSandbox javaDockerCodeSandbox;
 
     @Resource
     JavaNativeCodeSandbox javaNativeCodeSandbox;
-
-
-    @GetMapping("index")
-    public String index() {
-        return "Hello World!";
-    }
 
     /**
      * 开放api
@@ -44,6 +42,7 @@ public class MainController {
      */
     @PostMapping("/executeCode")
     ExecuteCodeResponse executeCode(@RequestBody ExecuteCodeRequest executeCodeRequest, HttpServletRequest request, HttpServletResponse response) {
+
         // 基本的认证
         String authHeader = request.getHeader(AUTH_REQUEST_HEADER);
         if (!AUTH_REQUEST_SECRET.equals(authHeader)) {
@@ -54,7 +53,8 @@ public class MainController {
         if (executeCodeRequest == null) {
             throw new RuntimeException("请求参数为空");
         }
-//        ExecuteCodeResponse executeCodeResponse = javaDockerCodeSandbox.executeCode(executeCodeRequest);
+        System.out.println("请求成功");
+        //ExecuteCodeResponse executeCodeResponse = javaDockerCodeSandbox.executeCode(executeCodeRequest);
         ExecuteCodeResponse executeCodeResponse = javaNativeCodeSandbox.executeCode(executeCodeRequest);
         return executeCodeResponse;
     }

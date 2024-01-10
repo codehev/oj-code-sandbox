@@ -1,6 +1,6 @@
 # 应用服务 WEB 访问端口
 server:
-  port: 8182
+  port: 8105
   servlet:
     context-path: /api
 
@@ -9,7 +9,13 @@ spring:
   application:
     name: oj-code-sandbox
 
-docker:
-  host: tcp://192.168.200.139:2375
-  api-version: 1.43
+# 调用远程docker服务（本项目使用本地docker，由于要挂载数据卷，只能在本地）
+#docker:
+#  host: tcp://192.168.200.139:2375
+#  api-version: 1.43
+
+auth:
+  request:
+    header: auth
+    secret: secretkey
 
