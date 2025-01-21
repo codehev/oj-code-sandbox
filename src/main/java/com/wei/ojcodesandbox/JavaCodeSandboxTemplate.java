@@ -26,8 +26,9 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
     /**
      * java文件名为Main.java
      * <p>
-     * java公共（public）类名要与文件名同名，而又运行class文件需要指定文件名（java -cp ./ Main）
-     * 所以用户输入代码的类名限制为 Main（参考 Poj）,可以减少编译时类名不一致的风险,而且不用从用户代码中提取类名，更方便。
+     * 用户输入代码的类名限制为 Main（参考 Poj）,而不用从用户代码中提取类名，更方便，java公共（public）类名要与文件名同名，所以指定为 Main.java
+     * 可以减少编译时类名不一致的风险。
+     *
      */
     private static final String GLOBAL_JAVA_CLASS_NAME = "Main.java";
     //设置最大运行时间毫秒，超过则结束进程
@@ -136,6 +137,7 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
             //注意！-Xmx参数。JVM的堆内存限制，不等同于系统实际占用的最大资源，可能会超出。
             //-Dfile.encoding=UTF-8解决运行乱码（输出结果中文乱码）
             //第一个%s目录路径，第二个%s输入参数列表（java代码 main函数的参数String[] args）
+            //Main是main方法所在类类名Main，非文件名
             //;%s -Djava.security.manager=%s 第一个%s安全管理器的编译好的.class文件路径，第二个%s.class文件名
             String runCmd = String.format("java -Xmx512m -Dfile.encoding=UTF-8 -cp %s Main %s", userCodeParentPath, inputArgs);
 //            String runCmd = String.format("java -Xmx512m -Dfile.encoding=UTF-8 -cp %s;%s -Djava.security.manager=%s Main %s", userCodeParentPath, SECURITY_MANAGER_PATH, SECURITY_MANAGER_CLASS_NAME, inputArgs);
