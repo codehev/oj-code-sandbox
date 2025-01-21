@@ -173,7 +173,7 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
 
         ExecuteCodeResponse executeCodeResponse = new ExecuteCodeResponse();
         List<String> outputList = new ArrayList<>();
-        //取用时最大值，便与判断是否超时
+        //取用时最大值，便于判断是否超时
         long maxTime = 0;
         long maxMemory = 0;
         for (ExecuteMessage executeMessage : executeMessageList) {
