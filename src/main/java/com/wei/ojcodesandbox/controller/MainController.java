@@ -1,7 +1,7 @@
 package com.wei.ojcodesandbox.controller;
 
-import com.wei.ojcodesandbox.JavaDockerCodeSandbox;
-import com.wei.ojcodesandbox.JavaNativeCodeSandbox;
+import com.wei.ojcodesandbox.codesandbox.JavaDockerCodeSandbox;
+import com.wei.ojcodesandbox.codesandbox.JavaNativeCodeSandbox;
 import com.wei.ojcodesandbox.model.ExecuteCodeRequest;
 import com.wei.ojcodesandbox.model.ExecuteCodeResponse;
 import org.springframework.beans.factory.annotation.Value;

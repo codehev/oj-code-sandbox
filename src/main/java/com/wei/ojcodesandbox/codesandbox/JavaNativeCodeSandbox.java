@@ -1,4 +1,4 @@
-package com.wei.ojcodesandbox;
+package com.wei.ojcodesandbox.codesandbox;
 
 import cn.hutool.core.io.resource.ResourceUtil;
 import com.wei.ojcodesandbox.model.ExecuteCodeRequest;

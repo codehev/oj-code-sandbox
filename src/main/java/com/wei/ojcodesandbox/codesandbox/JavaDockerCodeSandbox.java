@@ -1,4 +1,4 @@
-package com.wei.ojcodesandbox;
+package com.wei.ojcodesandbox.codesandbox;
 
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.util.ArrayUtil;
@@ -6,11 +6,12 @@ import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.command.*;
 import com.github.dockerjava.api.model.*;
-import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.command.ExecStartResultCallback;
 import com.wei.ojcodesandbox.model.ExecuteCodeRequest;
 import com.wei.ojcodesandbox.model.ExecuteCodeResponse;
 import com.wei.ojcodesandbox.model.ExecuteMessage;
+import com.wei.ojcodesandbox.utils.DockerClientUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
@@ -29,13 +30,18 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
 
+    @Value("${docker.host:tcp://101.126.44.74:2375}")
+    private String DOCKER_HOST;
+
+    @Value("${docker.api-version:1.47}")
+    private String DOCKER_API_VERSION;
+
     /**
      * 设置最大运行时间毫秒，超过则结束进程
      */
     private static final long TIME_OUT = 5000L;
 
     private static final Boolean FIRST_INIT = false;
-
 
 
     public static void main(String[] args) {
@@ -61,11 +67,16 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
     public List<ExecuteMessage> runFile(File userCodeFile, List<String> inputList) {
         String userCodeParentPath = userCodeFile.getParentFile().getAbsolutePath();
 
-        // 获取默认的 Docker Client
-        DockerClient dockerClient = DockerClientBuilder.getInstance().build();
+        //获取默认的 Docker client，如果你没有显式设置 dockerHttpClient，docker-java 会回退到 Jersey 客户端，并发出警告。
+        //DockerClient dockerClient = DockerClientBuilder.getInstance().build();
+        String DOCKER_HOST = "tcp://192.168.117.131:2375";
+        String DOCKER_API_VERSION = "1.47";
+
+        DockerClient dockerClient = DockerClientUtils.connect(DOCKER_HOST, DOCKER_API_VERSION);
 
         /**
          * 拉取镜像
+         * alpine轻量版本
          */
         String image = "openjdk:8-alpine";
         if (FIRST_INIT) {
@@ -88,7 +99,7 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
                 pullImageCmd.exec(pullImageResultCallback).awaitCompletion();
             } catch (Exception e) {
 //                System.out.println("拉取镜像异常");
-                throw new RuntimeException("拉取镜像异常",e);
+                throw new RuntimeException("拉取镜像异常", e);
 //                return getErrorResponse(e);
             }
             System.out.println("下载完成");
@@ -134,6 +145,7 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
         /**
          * 启动容器
          * 异步执行
+         * 只需用docker执行代码，其他步骤（编译等）都在容器外服务器操作
          */
         List<ExecuteMessage> executeMessageList = new ArrayList<>();
         dockerClient.startContainerCmd(containerId).exec();
@@ -237,7 +249,7 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
                 statsCmd.close();
 
             } catch (InterruptedException e) {
-                throw new RuntimeException("程序执行异常",e);
+                throw new RuntimeException("程序执行异常", e);
             }
 
             executeMessage.setTime(time);

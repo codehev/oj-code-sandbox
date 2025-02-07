@@ -1,4 +1,4 @@
-package com.wei.ojcodesandbox;
+package com.wei.ojcodesandbox.codesandbox;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
@@ -16,7 +16,6 @@ import com.wei.ojcodesandbox.model.ExecuteMessage;
 import com.wei.ojcodesandbox.model.JudgeInfo;
 import com.wei.ojcodesandbox.utils.ProcessUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
 import java.io.Closeable;
@@ -63,10 +62,10 @@ public class JavaDockerCodeSandboxOld implements CodeSandbox {
     private static final Boolean FIRST_INIT = false;
 
     @Value("${docker.host}")
-    private static String DOCKER_HOST;
+    private  String DOCKER_HOST;
 
     @Value("${docker.api-version}")
-    private static String DOCKER_API_VERSION;
+    private  String DOCKER_API_VERSION;
 
 
     public static void main(String[] args) {
