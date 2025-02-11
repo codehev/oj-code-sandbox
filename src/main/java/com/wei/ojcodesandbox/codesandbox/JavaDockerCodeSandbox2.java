@@ -26,7 +26,8 @@ import java.util.concurrent.TimeUnit;
 /***
  * docker代码沙箱参考代码
  */
-@Component
+@Deprecated
+//@Component
 public class JavaDockerCodeSandbox2 extends JavaCodeSandboxTemplate {
 
     private static final long TIME_OUT = 5000L;

@@ -20,6 +20,7 @@ import java.util.UUID;
 /**
  * 此实现类，是在main函数的参数String[] args接收参数，而非代码中键盘输入参数
  */
+@Deprecated
 public class JavaNativeCodeSandboxOld implements CodeSandbox {
 
     private static final String GLOBAL_CODE_DIR_NAME = "tempCode";
