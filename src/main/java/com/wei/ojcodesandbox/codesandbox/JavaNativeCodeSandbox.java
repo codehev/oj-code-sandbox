@@ -14,6 +14,10 @@ import java.util.Arrays;
 @Component
 public class JavaNativeCodeSandbox extends JavaCodeSandboxTemplate {
 
+    /**
+     * 测试原生代码沙箱
+     * @param args
+     */
     public static void main(String[] args) {
         JavaNativeCodeSandbox javaNativeCodeSandbox = new JavaNativeCodeSandbox();
 

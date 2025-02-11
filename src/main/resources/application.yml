@@ -9,9 +9,9 @@ spring:
   application:
     name: oj-code-sandbox
 
-# 调用远程docker服务（本项目使用本地docker，由于要挂载数据卷，只能在本地）
+# 调用docker服务（本项目使用本地docker，由于要挂载数据卷，只能在本地）
 docker:
-  host: tcp://101.126.44.74:2375
+  host: tcp://127.0.0.1:2375
   api-version: 1.47
 
 auth:

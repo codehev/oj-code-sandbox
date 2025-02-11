@@ -30,20 +30,24 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
 
-    @Value("${docker.host:tcp://101.126.44.74:2375}")
+    @Value("${docker.host:tcp://127.0.0.1:2375}")
     private String DOCKER_HOST;
 
     @Value("${docker.api-version:1.47}")
     private String DOCKER_API_VERSION;
 
     /**
-     * 设置最大运行时间毫秒，超过则结束进程
+     * 设置最大运行时间秒，超过则结束进程
      */
-    private static final long TIME_OUT = 5000L;
+    private static final long TIME_OUT = 3*60L;
 
     private static final Boolean FIRST_INIT = false;
 
-
+    /**
+     * 测试docker代码沙箱
+     * @param args
+     * 注意：runFile方法中使用了DOCKER_HOST、DOCKER_API_VERSION，运行main方法需要在方法里单独设置。上面的自动注入不生效
+     */
     public static void main(String[] args) {
         JavaDockerCodeSandbox javaDockerCodeSandbox = new JavaDockerCodeSandbox();
 
@@ -69,7 +73,7 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
 
         //获取默认的 Docker client，如果你没有显式设置 dockerHttpClient，docker-java 会回退到 Jersey 客户端，并发出警告。
         //DockerClient dockerClient = DockerClientBuilder.getInstance().build();
-        String DOCKER_HOST = "tcp://192.168.117.131:2375";
+        String DOCKER_HOST = "tcp://127.0.0.1:2375";
         String DOCKER_API_VERSION = "1.47";
 
         DockerClient dockerClient = DockerClientUtils.connect(DOCKER_HOST, DOCKER_API_VERSION);
@@ -239,8 +243,8 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
                         timout[0] = false;
                         super.onComplete();
                     }
-                }).awaitCompletion(TIME_OUT, TimeUnit.MICROSECONDS);
-                //设置超时时间，单位毫秒，这种方式无论超时与否，都会往下执行，无法判断是否超时。
+                }).awaitCompletion(TIME_OUT, TimeUnit.SECONDS);
+                //设置超时时间，单位秒，这种方式无论超时与否，都会往下执行，无法判断是否超时。
                 //停止计时
                 stopWatch.stop();
                 //获取所有任务的总时间（以毫秒为单位）

@@ -23,6 +23,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/***
+ * docker代码沙箱参考代码
+ */
 @Component
 public class JavaDockerCodeSandbox2 extends JavaCodeSandboxTemplate {
 
@@ -45,6 +48,7 @@ public class JavaDockerCodeSandbox2 extends JavaCodeSandboxTemplate {
 
     /**
      * 3、创建容器，把文件复制到容器内
+     *
      * @param userCodeFile
      * @param inputList
      * @return
